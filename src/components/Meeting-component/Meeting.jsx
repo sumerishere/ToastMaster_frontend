@@ -1,28 +1,40 @@
 import "../Meeting-component/Meeting.css";
 import { X } from 'lucide-react';
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const MeetingForm = () => {
-  
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [showRoleAllocation, setShowRoleAllocation] = useState(false);
   const [showUpcomingMeetings, setShowUpcomingMeetings] = useState(false);
-
-  // State for create meeting form
+  
   const [meetingData, setMeetingData] = useState({
     theme: '',
     venue: '',
     dateTime: ''
   });
-
-  // State for role allocation
+  
   const [selectedRole, setSelectedRole] = useState('');
   const [selectedMember, setSelectedMember] = useState('');
   const [availableRoles, setAvailableRoles] = useState(['Organizer', 'Speaker', 'Moderator', 'Attendee']);
   const [members] = useState(['Alice', 'Bob', 'Charlie', 'David', 'Eva']);
 
-  // Final payload state
-  // const [finalPayload, setFinalPayload] = useState(null);
+  const [upcomingMeetings, setUpcomingMeetings] = useState([]);
+  
+  useEffect(() => {
+    if (showUpcomingMeetings) {
+      fetchUpcomingMeetings();
+    }
+  }, [showUpcomingMeetings]);
+
+  const fetchUpcomingMeetings = async () => {
+    try {
+      const response = await fetch('http://localhost:8081/api/meeting');
+      const data = await response.json();
+      setUpcomingMeetings(data);
+    } catch (error) {
+      console.error('Error fetching upcoming meetings:', error);
+    }
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -40,16 +52,7 @@ const MeetingForm = () => {
 
   const handleRoleSubmit = () => {
     if (selectedRole && selectedMember) {
-
-    //----backend connectivity ---//  
-      // const payload = {
-      //   ...meetingData,
-      //   role: selectedRole,
-      //   member: selectedMember
-      // };
-      // setFinalPayload(payload);
-      // console.log("Final Payload:", payload);
-
+      //--- backend connectivity ---//  
       // Reset forms
       setMeetingData({ theme: '', venue: '', dateTime: '' });
       setSelectedRole('');
@@ -181,15 +184,28 @@ const MeetingForm = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {/* Add table rows here */}
+                  {upcomingMeetings.length > 0 ? (
+                    upcomingMeetings.map((meeting, index) => (
+                      <tr key={index}>
+                        <td>{meeting.theme}</td>
+                        <td>{meeting.venue}</td>
+                        <td>{meeting.dateTime}</td>
+                        <td>{meeting.role}</td>
+                        <td>{meeting.member}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="5">No upcoming meetings found</td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
           </div>
         )}
       </main>
-
-  </div>
+    </div>
   );
 };
 

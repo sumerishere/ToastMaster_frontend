@@ -7,6 +7,7 @@ import AboutPage from "./components/About-component/AboutPage";
 import Home from './components/Home-component/Home';
 import LoginForm from './components/Login-form/Login';
 import RegisterForm from './components/Registration-form/RegisterFormComponent';
+import Admin from './components/Admin-component/AdminComponent';
 
 function App() {
 
@@ -23,6 +24,8 @@ function App() {
             <Route path = "/LoginForm" element={<LoginForm/>}></Route>
 
             <Route path="/RegisterForm" element={<RegisterForm/>}></Route>
+
+            <Route path = "/Admin" element={<Admin/>}></Route>
           </Routes>
         </Router>
       </div>
